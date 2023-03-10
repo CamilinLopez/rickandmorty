@@ -1,4 +1,5 @@
 const { RouterLogin, passport } = require("../controllers/loginControlles");
+const { User } = require("../db/DB_conection");
 
 
 RouterLogin.post('/login', passport.authenticate('local', {
@@ -7,10 +8,12 @@ RouterLogin.post('/login', passport.authenticate('local', {
   failureFlash: true
 }));
 
-RouterLogin.get("/succes", asegurarAutenticado, (req, res) => {
+RouterLogin.get("/succes", asegurarAutenticado, async (req, res) => {
   const email = req.user.email;
+  const id = req.user.id;
   const password = req.user.password;
 
+  await User.update({ active: true }, { where: { id } });
   res.send(
     {
       email,
@@ -31,9 +34,11 @@ RouterLogin.get("/error", (req, res) => {
 });
 
 
-RouterLogin.get("/logout", (req, res) => {
+RouterLogin.get("/logout", async (req, res) => {
+  const id = req.user.id;
+  await User.update({ active: false }, { where: { id } });
+
   req.logOut(() => {
-    console.log("deslogeado")
     res.send({
       page: "/login"
     });

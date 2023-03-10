@@ -7,7 +7,6 @@ const { AddUserData, DeleteUserData, UpdateUserData, getOneUser } = require("../
 
 RouterUser.post("/singup", async (req, res) => {
     const { email, password } = req.body;
-    console.log(email, password)
     try {
         const data = await AddUserData({ email, password });
         if (data.error) throw new Error(data.error);
